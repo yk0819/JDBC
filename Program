@@ -1,0 +1,51 @@
+package ex1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
+
+public class Program {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+	// JDBC를 통해 MySQL에 있는 DB를 서버에 접속해서 가져오는 방법
+		
+		Connection connection; // 연결
+		String url = "jdbc:mysql://localhost/mydatabase?serverTimezone=Asia/Tokyo";	// mysql스키마		
+		String sql = "SELECT * FROM notice"; // SQL문법
+
+		Class.forName("com.mysql.cj.jdbc.Driver"); // 이것을 객체화 시키는 것을 로드라고 한다. 
+		Connection con = DriverManager.getConnection(url, "root", "yk0819"); // 드라이버("com.mysql.jdbc.Driver")에 연결해서 객체를 얻는다.
+		// 매개변수는 url, id, pw
+		Statement st = con.createStatement();// 실행도구 생성
+		ResultSet rs = st.executeQuery(sql);// 결과 실행후 패치하는 도구
+		// 위에 코드를 잘보면 다 연결되어있다
+		// 드라이버를 불러온다
+		// 연결하는 객체 생성 = 드라이버를 연결
+		// 쿼리를 실행하는 객체 생성 = 연결된 드라이버
+		// 실행후 반화하는 객체 생성 = 실행하는 객체
+		
+		if(rs.next()) { // SQL은 대소문자 가리지 않으므로 가능
+			
+			int ID = rs.getInt("ID");
+			String TILTE = rs.getString("TITLE");
+			String Writer_ID = rs.getString("WRITER_ID");
+			Date regDate = rs.getDate("REGDATE");
+			String content = rs.getString("content");
+			int hit = rs.getInt("hit");
+			
+			// 이제 결과를 돌려주어야 하는데 서버에서는 한번에 모든 데이터를 주는게 아니고
+			// 한줄씩 넘기면서 준다. next
+			System.out.printf(
+					" ID :%d, TITLE:%s, Writer_ID:%s, RegDate:%s, Content:%s, HIT:\n" + 
+					ID + TILTE + "\n" + Writer_ID + regDate + content + hit);	
+		}
+		
+		rs.close();
+		st.close();
+		con.close();
+		
+	}
+
+}
